@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using Gwen.Net.Platform;
 using OpenTK.Windowing.Common.Input;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using TextCopy;
 
 namespace Gwen.Net.OpenTk.Platform
@@ -21,6 +19,7 @@ namespace Gwen.Net.OpenTk.Platform
         {
             this.setCursor = setCursor;
             watch = new Stopwatch();
+            watch.Start();
         }
 
         /// <summary>
