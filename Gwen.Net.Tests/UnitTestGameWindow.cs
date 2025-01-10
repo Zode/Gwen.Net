@@ -34,7 +34,7 @@ namespace Gwen.Net.Tests
             gui = GwenGuiFactory.CreateFromGame(this, GwenGuiSettings.Default.From((settings) => 
             {
                 //Have the skin come from somewhere else.
-                settings.SkinFile = new System.IO.FileInfo("DefaultSkin2.png");
+                settings.SkinFile = new System.IO.FileInfo("DefaultSkin.png");
                 settings.DefaultFontSize = 14;
             }));
 

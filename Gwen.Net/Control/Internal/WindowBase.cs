@@ -50,7 +50,21 @@ namespace Gwen.Net.Control.Internal
         /// </summary>
         public override bool IsOnTop
         {
-            get { return Parent.Children.Where(x => x is Window).Last() == this; }
+            get {
+                if(Parent.Children.Count == 0)
+                {
+                    return true; //we are probably on top if we are the only child
+                }
+
+                try
+                {
+                    return Parent.Children.Where(x => x is Window).Last() == this;
+                }
+                catch(Exception)
+                {
+                    return false; //just in case the above LinQ fails, we don't want to terminate the app.
+                }
+            }
         }
 
         /// <summary>
