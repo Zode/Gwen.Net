@@ -237,7 +237,7 @@ namespace Gwen.Net.OpenTk.Renderers
                 TextRenderer tr = new TextRenderer(size.Width, size.Height, this);
 
                 //need to shift down, because skia seems to take the position as the intended baseline position
-                tr.DrawString(text, sysFont, SKColors.White, new(0, (int)((font.Size - font.FontMetrics.DescentPixels) * Scale))); // renders string on the texture
+                tr.DrawString(text, sysFont, SKColors.White, new(0, (int)(font.RealSize - font.FontMetrics.DescentPixels))); // renders string on the texture
 
                 DrawTexturedRect(tr.Texture, new Rectangle(position.X, position.Y, tr.Texture.Width, tr.Texture.Height));
 
