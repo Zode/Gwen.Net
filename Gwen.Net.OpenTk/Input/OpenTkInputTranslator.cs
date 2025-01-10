@@ -36,18 +36,14 @@ namespace Gwen.Net.OpenTk.Input
                 case Keys.Home: return GwenMappedKey.Home;
                 case Keys.End: return GwenMappedKey.End;
                 case Keys.Delete: return GwenMappedKey.Delete;
+                case Keys.RightControl:
                 case Keys.LeftControl:
                     controlPressed = true;
                     return GwenMappedKey.Control;
-                case Keys.LeftAlt: return GwenMappedKey.Alt;
-                case Keys.LeftShift: return GwenMappedKey.Shift;
-                case Keys.RightControl: return GwenMappedKey.Control;
+                case Keys.LeftAlt:
                 case Keys.RightAlt:
-                    if (controlPressed)
-                    {
-                        canvas.Input_Key(GwenMappedKey.Control, false);
-                    }
                     return GwenMappedKey.Alt;
+                case Keys.LeftShift:
                 case Keys.RightShift: return GwenMappedKey.Shift;
 
             }

@@ -202,11 +202,7 @@ namespace Gwen.Net.Input
                 if (m_KeyData.KeyState[i] && time > m_KeyData.NextRepeat[i])
                 {
                     m_KeyData.NextRepeat[i] = Platform.GwenPlatform.GetTimeInSeconds() + KeyRepeatRate;
-
-                    if (KeyboardFocus != null)
-                    {
-                        KeyboardFocus.InputKeyPressed((GwenMappedKey)i);
-                    }
+                    KeyboardFocus?.InputKeyPressed((GwenMappedKey)i);
                 }
             }
         }
