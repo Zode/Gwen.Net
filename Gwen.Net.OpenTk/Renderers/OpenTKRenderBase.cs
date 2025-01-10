@@ -170,12 +170,12 @@ namespace Gwen.Net.OpenTk.Renderers
                 sysFont = font.RendererData as SKFont;
             }
 
-            float heightPixels = sysFont.Size;
-            float ascentPixels = -sysFont.Metrics.Ascent;
-            float descentPixels = sysFont.Metrics.Descent;
+            float heightPixels = sysFont.Size * Scale;
+            float ascentPixels = -sysFont.Metrics.Ascent * Scale;
+            float descentPixels = sysFont.Metrics.Descent * Scale;
             float cellHeightPixels = ascentPixels + descentPixels;
             float internalLeadingPixels = cellHeightPixels - heightPixels;
-            float lineSpacingPixels = sysFont.Metrics.Leading + cellHeightPixels;
+            float lineSpacingPixels = sysFont.Metrics.Leading * Scale + cellHeightPixels;
             float externalLeadingPixels = lineSpacingPixels - cellHeightPixels;
 
             FontMetrics fm = new FontMetrics
@@ -212,7 +212,7 @@ namespace Gwen.Net.OpenTk.Renderers
             }
 
             sysFont.MeasureText(text, out SKRect bounds);
-            return new Size(Util.Ceil(bounds.Width), Util.Ceil(font.RealSize));
+            return new Size(Util.Ceil(bounds.Width + Scale), Util.Ceil(font.RealSize + 1));
         }
 
         public override void RenderText(Font font, Point position, string text)
@@ -237,7 +237,7 @@ namespace Gwen.Net.OpenTk.Renderers
                 TextRenderer tr = new TextRenderer(size.Width, size.Height, this);
 
                 //need to shift down, because skia seems to take the position as the intended baseline position
-                tr.DrawString(text, sysFont, SKColors.White, new(0, (int)font.FontMetrics.AscentPixels)); // renders string on the texture
+                tr.DrawString(text, sysFont, SKColors.White, new(0, (int)((font.Size - font.FontMetrics.DescentPixels) * Scale))); // renders string on the texture
 
                 DrawTexturedRect(tr.Texture, new Rectangle(position.X, position.Y, tr.Texture.Width, tr.Texture.Height));
 
@@ -280,8 +280,6 @@ namespace Gwen.Net.OpenTk.Renderers
             t.Width = bmp.Width;
             t.Height = bmp.Height;
 
-            
-            //var data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, lock_format);
             nint data = bmp.GetPixels();
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data);
 
