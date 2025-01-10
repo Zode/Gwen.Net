@@ -35,6 +35,7 @@ namespace Gwen.Net.Tests
             {
                 //Have the skin come from somewhere else.
                 settings.SkinFile = new System.IO.FileInfo("DefaultSkin2.png");
+                settings.DefaultFontSize = 14;
             }));
 
             updateFrameTimes = new CircularBuffer<double>(MaxFrameSampleSize);

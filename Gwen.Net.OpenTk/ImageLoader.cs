@@ -30,7 +30,7 @@ namespace Gwen.Net.OpenTk
 
         public static SKBitmap StandardLoader(string s)
         {
-            return SKBitmap.Decode(s) ?? throw new FileNotFoundException(s);
+            return SKBitmap.Decode(s) ?? throw new FileNotFoundException("Failed to decode stream");
         }
 
         public static SKBitmap Load(string filename)

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Gwen.Net.Renderer;
 using OpenTK.Graphics.OpenGL;
 using SkiaSharp;
 
 using Bitmap = SkiaSharp.SKBitmap;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-using SizeF = System.Drawing.SizeF;
 
 namespace Gwen.Net.OpenTk.Renderers
 {
@@ -252,11 +252,12 @@ namespace Gwen.Net.OpenTk.Renderers
 
         internal static void LoadTextureInternal(Texture t, Bitmap bmp)
         {
-            if(bmp.ColorType != SKColorType.Bgra8888)
+            PixelFormat pixelFormat = bmp.ColorType switch
             {
-                t.Failed = true;
-                return;
-            }
+                SKColorType.Rgba8888 => PixelFormat.Rgba,
+                SKColorType.Bgra8888 => PixelFormat.Bgra,
+                _ => throw new NotSupportedException($"Unsupported SKColorType {bmp.ColorType}")
+            };
 
             // Create the opengl texture
             GL.GenTextures(1, out int glTex);
@@ -273,7 +274,7 @@ namespace Gwen.Net.OpenTk.Renderers
             t.Height = bmp.Height;
 
             nint data = bmp.GetPixels();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, pixelFormat, PixelType.UnsignedByte, data);
 
             bmp.Dispose();
         }
@@ -285,8 +286,9 @@ namespace Gwen.Net.OpenTk.Renderers
             {
                 bmp = ImageLoader.Load(t.Name);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine($"LoadTexture exception for file \"{t.Name}\": {e.Message}\n{e.StackTrace}");
                 t.Failed = true;
                 return;
             }
@@ -301,10 +303,11 @@ namespace Gwen.Net.OpenTk.Renderers
 
             try
             {
-                bmp = ImageLoader.Load(t.Name);
+                bmp = Bitmap.Decode(data) ?? throw new Exception("Failed to decode stream");
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine($"LoadTextureStream exception: {e.Message}\n{e.StackTrace}");
                 t.Failed = true;
                 return;
             }
@@ -323,13 +326,14 @@ namespace Gwen.Net.OpenTk.Renderers
                     fixed (byte* ptr = &pixelData[0])
                     {
                         //bmp = new Bitmap(t.Width, t.Height, 4 * t.Width, System.Drawing.Imaging.PixelFormat.Format32bppArgb, (IntPtr)ptr);
-                        bmp = new Bitmap(t.Width, t.Height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+                        bmp = new Bitmap(t.Width, t.Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
                         bmp.SetPixels((IntPtr)ptr);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine($"LoadTextureRaw exception: {e.Message}\n{e.StackTrace}");
                 t.Failed = true;
                 return;
             }

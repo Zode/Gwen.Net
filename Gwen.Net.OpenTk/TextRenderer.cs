@@ -23,7 +23,7 @@ namespace Gwen.Net.OpenTk
             if (height <= 0)
                 throw new ArgumentOutOfRangeException("height");
 
-            bitmap = new Bitmap(width, height, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Opaque);
+            bitmap = new Bitmap(width, height, SkiaSharp.SKColorType.Rgba8888, SkiaSharp.SKAlphaType.Opaque);
             graphics = new SKCanvas(bitmap);
             //graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             graphics.Clear(SKColors.Transparent);
