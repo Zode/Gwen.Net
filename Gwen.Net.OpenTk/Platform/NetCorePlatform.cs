@@ -47,7 +47,12 @@ namespace Gwen.Net.OpenTk.Platform
                         return;
                     }
                 });
-            staThread.SetApartmentState(ApartmentState.STA);
+            
+            if(OperatingSystem.IsWindows())
+            {
+                staThread.SetApartmentState(ApartmentState.STA);
+            }
+
             staThread.Start();
             staThread.Join();
             // at this point either you have clipboard data or an exception*/
@@ -75,7 +80,12 @@ namespace Gwen.Net.OpenTk.Platform
                         return;
                     }
                 });
-            staThread.SetApartmentState(ApartmentState.STA);
+
+            if(OperatingSystem.IsWindows())
+            {
+                staThread.SetApartmentState(ApartmentState.STA);
+            }
+
             staThread.Start();
             staThread.Join();
             // at this point either you have clipboard data or an exception
@@ -104,16 +114,16 @@ namespace Gwen.Net.OpenTk.Platform
                     translatedCursor = MouseCursor.IBeam;
                     break;
                 case Cursor.Finger:
-                    translatedCursor = MouseCursor.Hand;
+                    translatedCursor = MouseCursor.PointingHand;
                     break;
                 case Cursor.Normal:
                     translatedCursor = MouseCursor.Default;
                     break;
                 case Cursor.SizeNS:
-                    translatedCursor = MouseCursor.VResize;
+                    translatedCursor = MouseCursor.ResizeNS;
                     break;
                 case Cursor.SizeWE:
-                    translatedCursor = MouseCursor.HResize;
+                    translatedCursor = MouseCursor.ResizeEW;
                     break;
                 default:
                     translatedCursor = MouseCursor.Crosshair;

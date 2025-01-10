@@ -252,22 +252,14 @@ namespace Gwen.Net.OpenTk.Renderers
 
         internal static void LoadTextureInternal(Texture t, Bitmap bmp)
         {
-            SKColorType colorType;
-            switch (bmp.ColorType)
+            if(bmp.ColorType != SKColorType.Bgra8888)
             {
-                case SKColorType.Bgra8888:
-                    colorType = SKColorType.Bgra8888;
-                    break;
-                default:
-                    t.Failed = true;
-                    return;
+                t.Failed = true;
+                return;
             }
 
-
-            int glTex;
-
             // Create the opengl texture
-            GL.GenTextures(1, out glTex);
+            GL.GenTextures(1, out int glTex);
 
             GL.BindTexture(TextureTarget.Texture2D, glTex);
             lastTextureID = glTex;
@@ -283,8 +275,6 @@ namespace Gwen.Net.OpenTk.Renderers
             nint data = bmp.GetPixels();
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data);
 
-
-            //bmp.UnlockBits(data);
             bmp.Dispose();
         }
 
