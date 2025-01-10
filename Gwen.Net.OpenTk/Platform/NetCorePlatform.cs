@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Gwen.Net.Platform;
-using OpenToolkit.Windowing.Common.Input;
-using OpenToolkit.Windowing.GraphicsLibraryFramework;
+using OpenTK.Windowing.Common.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using TextCopy;
 
 namespace Gwen.Net.OpenTk.Platform

@@ -7,12 +7,12 @@ using Gwen.Net.OpenTk.Input;
 using Gwen.Net.OpenTk.Platform;
 using Gwen.Net.Skin;
 using Gwen.Net.Tests.Components;
-using OpenToolkit.Graphics.OpenGL;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common;
-using OpenToolkit.Windowing.Common.Input;
-using OpenToolkit.Windowing.Desktop;
-using OpenToolkit.Windowing.GraphicsLibraryFramework;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Gwen.Net.Tests
 {
@@ -83,7 +83,7 @@ namespace Gwen.Net.Tests
             gui.Render();
             SwapBuffers();
 
-            if (RenderFrequency == 0)
+            if (UpdateFrequency == 0)
             {
                 renderFrameTimes.Put(e.Time);
                 if (renderFrameTimes.Sum(t => t) >= 1)
@@ -95,7 +95,7 @@ namespace Gwen.Net.Tests
             }
             else
             {
-                unitTestControls.RenderFps = RenderFrequency;
+                unitTestControls.RenderFps = UpdateFrequency;
             }
         }
 

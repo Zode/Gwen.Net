@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Gwen.Net.Renderer;
-using OpenToolkit.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL;
 
 using Bitmap = System.Drawing.Bitmap;
-using PixelFormat = OpenToolkit.Graphics.OpenGL.PixelFormat;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using SizeF = System.Drawing.SizeF;
 
 namespace Gwen.Net.OpenTk.Renderers
