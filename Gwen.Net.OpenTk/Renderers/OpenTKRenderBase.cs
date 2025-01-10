@@ -211,8 +211,8 @@ namespace Gwen.Net.OpenTk.Renderers
                 return new Size(tex.Width, tex.Height);
             }
 
-            sysFont.MeasureText(text, out SKRect bounds);
-            return new Size(Util.Ceil(bounds.Width + Scale), Util.Ceil(font.RealSize + 1));
+            float width = sysFont.MeasureText(text);
+            return new Size(Util.Ceil(width + Scale), Util.Ceil(font.RealSize + 1));
         }
 
         public override void RenderText(Font font, Point position, string text)
