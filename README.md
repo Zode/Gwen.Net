@@ -19,4 +19,4 @@ Needs confirmation:
 
 ### Updates
 
-- 2025-01-10: upgrade to Net8, upgrade referenced package versions, swapped System.Drawing to SkiaSharp 
+- 2025-01-10: upgrade to Net8, upgrade referenced package versions, swapped System.Drawing to SkiaSharp, various minor fixes
