@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.IO;
 using System.Linq;
 using Gwen.Net.OpenTk.Exceptions;
+using SkiaSharp;
 
 namespace Gwen.Net.OpenTk
 {
     public static class ImageLoader
     {
-        public delegate Bitmap Loader(string filename);
+        public delegate SKBitmap Loader(string filename);
 
         public static readonly Dictionary<string, Loader> loaders = new Dictionary<string, Loader>
         {
@@ -27,12 +28,12 @@ namespace Gwen.Net.OpenTk
             { "emf", StandardLoader},
         };
 
-        public static Bitmap StandardLoader(string s)
+        public static SKBitmap StandardLoader(string s)
         {
-            return new Bitmap(s);
+            return SKBitmap.Decode(s) ?? throw new FileNotFoundException(s);
         }
 
-        public static Bitmap Load(string filename)
+        public static SKBitmap Load(string filename)
         {
             string resourceType = filename.ToLower().Split('.').Last();
             if (loaders.TryGetValue(resourceType, out var loader))

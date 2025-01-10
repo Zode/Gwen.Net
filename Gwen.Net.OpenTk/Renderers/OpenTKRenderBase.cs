@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using Gwen.Net.Renderer;
 using OpenTK.Graphics.OpenGL;
+using SkiaSharp;
 
-using Bitmap = System.Drawing.Bitmap;
+using Bitmap = SkiaSharp.SKBitmap;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using SizeF = System.Drawing.SizeF;
 
@@ -16,8 +15,6 @@ namespace Gwen.Net.OpenTk.Renderers
         protected static int lastTextureID;
 
         private readonly Dictionary<Tuple<string, Font>, TextRenderer> stringCache;
-        private readonly Graphics graphics;
-        private readonly StringFormat stringFormat;
 
         protected int drawCallCount;
         protected bool clipEnabled;
@@ -38,9 +35,6 @@ namespace Gwen.Net.OpenTk.Renderers
             GLVersion = GL.GetInteger(GetPName.MajorVersion) * 10 + GL.GetInteger(GetPName.MinorVersion);
 
             stringCache = new Dictionary<Tuple<string, Font>, TextRenderer>();
-            graphics = Graphics.FromImage(new Bitmap(1024, 1024));
-            stringFormat = new StringFormat(StringFormat.GenericTypographic);
-            stringFormat.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
         }
 
         public override void Dispose()
@@ -137,20 +131,18 @@ namespace Gwen.Net.OpenTk.Renderers
         public override bool LoadFont(Font font)
         {
             font.RealSize = (float)Math.Ceiling(font.Size * Scale);
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
+            SKFont sysFont = font.RendererData as SKFont;
+            sysFont?.Dispose();
 
-            if (sysFont != null)
-                sysFont.Dispose();
+            
+            SKFontStyleWeight fontStyleWeight = SKFontStyleWeight.Normal;
+            if (font.Bold) fontStyleWeight = SKFontStyleWeight.Bold;
+            //if (font.Italic) fontStyle |= System.Drawing.FontStyle.Italic;
+            //if (font.Underline) fontStyle |= System.Drawing.FontStyle.Underline;
+            //if (font.Strikeout) fontStyle |= System.Drawing.FontStyle.Strikeout;
 
-            System.Drawing.FontStyle fontStyle = System.Drawing.FontStyle.Regular;
-            if (font.Bold) fontStyle |= System.Drawing.FontStyle.Bold;
-            if (font.Italic) fontStyle |= System.Drawing.FontStyle.Italic;
-            if (font.Underline) fontStyle |= System.Drawing.FontStyle.Underline;
-            if (font.Strikeout) fontStyle |= System.Drawing.FontStyle.Strikeout;
-
-            // apaprently this can't fail @_@
-            // "If you attempt to use a font that is not supported, or the font is not installed on the machine that is running the application, the Microsoft Sans Serif font will be substituted."
-            sysFont = new System.Drawing.Font(font.FaceName, font.RealSize, fontStyle);
+            SKTypeface typeFace = SKTypeface.FromFamilyName(font.FaceName, fontStyleWeight, SKFontStyleWidth.Normal, font.Italic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
+            sysFont = new SKFont(typeFace, font.RealSize, Scale);
             font.RendererData = sysFont;
 
             return true;
@@ -161,9 +153,7 @@ namespace Gwen.Net.OpenTk.Renderers
             if (font.RendererData == null)
                 return;
 
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
-            if (sysFont == null)
-                throw new InvalidOperationException("Freeing empty font");
+            SKFont sysFont = font.RendererData as SKFont ?? throw new InvalidOperationException("Freeing empty font");
 
             sysFont.Dispose();
             font.RendererData = null;
@@ -171,30 +161,26 @@ namespace Gwen.Net.OpenTk.Renderers
 
         public override FontMetrics GetFontMetrics(Font font)
         {
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
+            SKFont sysFont = font.RendererData as SKFont;
 
             if (sysFont == null || Math.Abs(font.RealSize - font.Size * Scale) > 2)
             {
                 FreeFont(font);
                 LoadFont(font);
-                sysFont = font.RendererData as System.Drawing.Font;
+                sysFont = font.RendererData as SKFont;
             }
 
-            // from: http://csharphelper.com/blog/2014/08/get-font-metrics-in-c
-            float emHeight = sysFont.FontFamily.GetEmHeight(sysFont.Style);
-            float emHeightPixels = ConvertToPixels(sysFont.Size, sysFont.Unit);
-            float designToPixels = emHeightPixels / emHeight;
-
-            float ascentPixels = designToPixels * sysFont.FontFamily.GetCellAscent(sysFont.Style);
-            float descentPixels = designToPixels * sysFont.FontFamily.GetCellDescent(sysFont.Style);
+            float heightPixels = sysFont.Size;
+            float ascentPixels = -sysFont.Metrics.Ascent;
+            float descentPixels = sysFont.Metrics.Descent;
             float cellHeightPixels = ascentPixels + descentPixels;
-            float internalLeadingPixels = cellHeightPixels - emHeightPixels;
-            float lineSpacingPixels = designToPixels * sysFont.FontFamily.GetLineSpacing(sysFont.Style);
+            float internalLeadingPixels = cellHeightPixels - heightPixels;
+            float lineSpacingPixels = sysFont.Metrics.Leading + cellHeightPixels;
             float externalLeadingPixels = lineSpacingPixels - cellHeightPixels;
 
             FontMetrics fm = new FontMetrics
             (
-                emHeightPixels,
+                heightPixels,
                 ascentPixels,
                 descentPixels,
                 cellHeightPixels,
@@ -206,59 +192,40 @@ namespace Gwen.Net.OpenTk.Renderers
             return fm;
         }
 
-        private float ConvertToPixels(float value, GraphicsUnit unit)
-        {
-            switch (unit)
-            {
-                case GraphicsUnit.Document: value *= graphics.DpiX / 300; break;
-                case GraphicsUnit.Inch: value *= graphics.DpiX; break;
-                case GraphicsUnit.Millimeter: value *= graphics.DpiX / 25.4F; break;
-                case GraphicsUnit.Pixel: break;
-                case GraphicsUnit.Point: value *= graphics.DpiX / 72; break;
-                default: throw new Exception("Unknown unit " + unit.ToString());
-            }
-
-            return value;
-        }
-
         public override Size MeasureText(Font font, string text)
         {
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
+            SKFont sysFont = font.RendererData as SKFont;
 
             if (sysFont == null || Math.Abs(font.RealSize - font.Size * Scale) > 2)
             {
                 FreeFont(font);
                 LoadFont(font);
-                sysFont = font.RendererData as System.Drawing.Font;
+                sysFont = font.RendererData as SKFont;
             }
 
             var key = new Tuple<String, Font>(text, font);
 
-            if (stringCache.ContainsKey(key))
+            if (stringCache.TryGetValue(key, out TextRenderer val))
             {
-                var tex = stringCache[key].Texture;
+                Texture tex = val.Texture;
                 return new Size(tex.Width, tex.Height);
             }
 
-            SizeF TabSize = graphics.MeasureString("....", sysFont); //Spaces are not being picked up, let's just use .'s.
-            stringFormat.SetTabStops(0f, new float[] { TabSize.Width });
-
-            SizeF size = graphics.MeasureString(text, sysFont, System.Drawing.Point.Empty, stringFormat);
-
-            return new Size(Util.Ceil(size.Width), Util.Ceil(size.Height));
+            sysFont.MeasureText(text, out SKRect bounds);
+            return new Size(Util.Ceil(bounds.Width), Util.Ceil(font.RealSize));
         }
 
         public override void RenderText(Font font, Point position, string text)
         {
             Flush();
 
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
+            SKFont sysFont = font.RendererData as SKFont;
 
             if (sysFont == null || Math.Abs(font.RealSize - font.Size * Scale) > 2)
             {
                 FreeFont(font);
                 LoadFont(font);
-                sysFont = font.RendererData as System.Drawing.Font;
+                sysFont = font.RendererData as SKFont;
             }
 
             var key = new Tuple<String, Font>(text, font);
@@ -268,7 +235,9 @@ namespace Gwen.Net.OpenTk.Renderers
                 // not cached - create text renderer
                 Size size = MeasureText(font, text);
                 TextRenderer tr = new TextRenderer(size.Width, size.Height, this);
-                tr.DrawString(text, sysFont, Brushes.White, Gwen.Net.Point.Zero, stringFormat); // renders string on the texture
+
+                //need to shift down, because skia seems to take the position as the intended baseline position
+                tr.DrawString(text, sysFont, SKColors.White, new(0, (int)font.FontMetrics.AscentPixels)); // renders string on the texture
 
                 DrawTexturedRect(tr.Texture, new Rectangle(position.X, position.Y, tr.Texture.Width, tr.Texture.Height));
 
@@ -281,17 +250,13 @@ namespace Gwen.Net.OpenTk.Renderers
             }
         }
 
-        internal static void LoadTextureInternal(Texture t, System.Drawing.Bitmap bmp)
+        internal static void LoadTextureInternal(Texture t, Bitmap bmp)
         {
-
-            System.Drawing.Imaging.PixelFormat lock_format;
-            switch (bmp.PixelFormat)
+            SKColorType colorType;
+            switch (bmp.ColorType)
             {
-                case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
-                    lock_format = System.Drawing.Imaging.PixelFormat.Format32bppArgb;
-                    break;
-                case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                    lock_format = System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+                case SKColorType.Bgra8888:
+                    colorType = SKColorType.Bgra8888;
                     break;
                 default:
                     t.Failed = true;
@@ -315,11 +280,13 @@ namespace Gwen.Net.OpenTk.Renderers
             t.Width = bmp.Width;
             t.Height = bmp.Height;
 
-            var data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, lock_format);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            
+            //var data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, lock_format);
+            nint data = bmp.GetPixels();
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data);
 
 
-            bmp.UnlockBits(data);
+            //bmp.UnlockBits(data);
             bmp.Dispose();
         }
 
@@ -366,7 +333,11 @@ namespace Gwen.Net.OpenTk.Renderers
                 unsafe
                 {
                     fixed (byte* ptr = &pixelData[0])
-                        bmp = new Bitmap(t.Width, t.Height, 4 * t.Width, System.Drawing.Imaging.PixelFormat.Format32bppArgb, (IntPtr)ptr);
+                    {
+                        //bmp = new Bitmap(t.Width, t.Height, 4 * t.Width, System.Drawing.Imaging.PixelFormat.Format32bppArgb, (IntPtr)ptr);
+                        bmp = new Bitmap(t.Width, t.Height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+                        bmp.SetPixels((IntPtr)ptr);
+                    }
                 }
             }
             catch (Exception)
@@ -388,12 +359,13 @@ namespace Gwen.Net.OpenTk.Renderers
             // Sort out our GWEN texture
             t.RendererData = glTex;
 
-            var data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            //var data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly,
+            //    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            nint data = bmp.GetPixels();
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data.Scan0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, t.Width, t.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
 
-            bmp.UnlockBits(data);
+            //bmp.UnlockBits(data);
             bmp.Dispose();
 
             //[halfofastaple] Must rebind previous texture, to ensure creating a texture doesn't mess with the render flow.

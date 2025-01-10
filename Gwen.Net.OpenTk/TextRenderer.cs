@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Text;
+using Gwen.Net.Control;
 using Gwen.Net.OpenTk.Renderers;
-using Bitmap = System.Drawing.Bitmap;
+using SkiaSharp;
+using Bitmap = SkiaSharp.SKBitmap;
 
 namespace Gwen.Net.OpenTk
 {
     public sealed class TextRenderer : IDisposable
     {
         private readonly Bitmap bitmap;
-        private readonly Graphics graphics;
+        private readonly SKCanvas graphics;
         private readonly Texture texture;
+        private readonly SKPaint paint;
         private bool disposed;
 
         public Texture Texture => texture;
@@ -22,14 +23,20 @@ namespace Gwen.Net.OpenTk
             if (height <= 0)
                 throw new ArgumentOutOfRangeException("height");
 
-            bitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            graphics = Graphics.FromImage(bitmap);
-            graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-            graphics.Clear(System.Drawing.Color.Transparent);
+            bitmap = new Bitmap(width, height, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Opaque);
+            graphics = new SKCanvas(bitmap);
+            //graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            graphics.Clear(SKColors.Transparent);
             texture = new Texture(renderer)
             {
                 Width = width,
                 Height = height
+            };
+
+            paint = new()
+            {
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
             };
         }
 
@@ -37,14 +44,14 @@ namespace Gwen.Net.OpenTk
         /// Draws the specified string to the backing store.
         /// </summary>
         /// <param name="text">The <see cref="System.String"/> to draw.</param>
-        /// <param name="font">The <see cref="System.Drawing.Font"/> that will be used.</param>
-        /// <param name="brush">The <see cref="System.Drawing.Brush"/> that will be used.</param>
+        /// <param name="font">The <see cref="SKFont"/> that will be used.</param>
+        /// <param name="color">The <see cref="SKColor"/> that will be used.</param>
         /// <param name="point">The location of the text on the backing store, in 2d pixel coordinates.
         /// The origin (0, 0) lies at the top-left corner of the backing store.</param>
-        public void DrawString(string text, System.Drawing.Font font, Brush brush, Point point, StringFormat format)
+        public void DrawString(string text, SKFont font, SKColor color, Point point)
         {
-            graphics.DrawString(text, font, brush, new System.Drawing.Point(point.X, point.Y), format); // render text on the bitmap
-
+            paint.Color = color;
+            graphics.DrawText(text, point.X, point.Y, font, paint);
             OpenTKRendererBase.LoadTextureInternal(texture, bitmap); // copy bitmap to gl texture
         }
 
