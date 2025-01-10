@@ -1,4 +1,4 @@
-# Gwen.Net (.Net Standard & .Net Core)
+# Gwen.Net (.Net Core: net8)
 
 ![master](https://github.com/Geinome/Gwen.Net/workflows/.NET%20Core/badge.svg?branch=master)
 
@@ -12,17 +12,11 @@ a new two-pass layout engine, support for UI creation using XML and new controls
 ### Supported platforms
 
 tested:
-- Windows (tested on Windows 10)
+- Linux
 
 Needs confirmation:
-- Linux 
-- Osx
-
-plans:
-- Android (tested on 4.4 API 19)
-- iOS (tested on iOS 9.0)
+- Windows
 
 ### Updates
 
-- 27/05/2020: Finished migration to .net core and updated to use new OpenTk prelrelease packages for 4.0.
-- 14/09/2017 : Port To .Net Core 
+- 2025-01-10: upgrade to Net8, upgrade referenced package versions, swapped System.Drawing to SkiaSharp 
