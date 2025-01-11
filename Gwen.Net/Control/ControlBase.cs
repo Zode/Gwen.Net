@@ -667,8 +667,10 @@ namespace Gwen.Net.Control
             Gwen.Net.ToolTip.ControlDeleted(this);
             Animation.Cancel(this);
 
-            foreach (ControlBase child in m_Children)
-                child.Dispose();
+            for(int i = m_Children.Count - 1; i >= 0; i--)
+            {
+                m_Children[i].Dispose();
+            }
 
             if (m_ToolTip != null)
                 m_ToolTip.Dispose();
