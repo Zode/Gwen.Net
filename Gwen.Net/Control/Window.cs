@@ -38,6 +38,11 @@ namespace Gwen.Net.Control
         public bool Modal { get { return m_Modal != null; } set { MakeModal(); } }
 
         /// <summary>
+        /// Event that fires when the window closes, if returning true the window will close.
+        /// </summary>
+        public Func<bool> OnRequestClose {get; set;}
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="parent">Parent control.</param>
@@ -59,6 +64,11 @@ namespace Gwen.Net.Control
 
         public override void Close()
         {
+            if(OnRequestClose is not null && !OnRequestClose())
+            {
+                return;
+            }
+
             if (m_Modal != null)
             {
                 m_Modal.DelayedDelete();
