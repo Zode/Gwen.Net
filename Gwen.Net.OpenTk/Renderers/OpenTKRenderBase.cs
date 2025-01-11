@@ -142,7 +142,15 @@ namespace Gwen.Net.OpenTk.Renderers
             //if (font.Strikeout) fontStyle |= System.Drawing.FontStyle.Strikeout;
 
             SKTypeface typeFace = SKTypeface.FromFamilyName(font.FaceName, fontStyleWeight, SKFontStyleWidth.Normal, font.Italic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
-            sysFont = new SKFont(typeFace, font.RealSize, Scale);
+            sysFont = new SKFont(typeFace, font.RealSize, Scale)
+            {
+                Subpixel = false,
+                ForceAutoHinting = true,
+                Hinting = SKFontHinting.Normal,
+                Edging = SKFontEdging.Antialias,
+            };
+
+
             font.RendererData = sysFont;
 
             return true;

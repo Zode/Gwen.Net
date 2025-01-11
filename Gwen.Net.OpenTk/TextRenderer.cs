@@ -23,10 +23,9 @@ namespace Gwen.Net.OpenTk
             if (height <= 0)
                 throw new ArgumentOutOfRangeException("height");
 
-            bitmap = new Bitmap(width, height, SkiaSharp.SKColorType.Rgba8888, SkiaSharp.SKAlphaType.Opaque);
+            bitmap = new Bitmap(width, height, SkiaSharp.SKColorType.Rgba8888, SkiaSharp.SKAlphaType.Unpremul);
             graphics = new SKCanvas(bitmap);
             //graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-            graphics.Clear(SKColors.Transparent);
             texture = new Texture(renderer)
             {
                 Width = width,
@@ -51,7 +50,9 @@ namespace Gwen.Net.OpenTk
         public void DrawString(string text, SKFont font, SKColor color, Point point)
         {
             paint.Color = color;
+            graphics.Clear(color.WithAlpha(0));
             graphics.DrawText(text, point.X, point.Y, font, paint);
+
             OpenTKRendererBase.LoadTextureInternal(texture, bitmap); // copy bitmap to gl texture
         }
 
