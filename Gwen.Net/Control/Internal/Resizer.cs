@@ -48,6 +48,11 @@ namespace Gwen.Net.Control.Internal
             delta.X -= x;
             delta.Y -= y;
 
+            m_Target.Left = bounds.Left;
+            m_Target.Top = bounds.Top;
+            m_Target.Width = bounds.Width;
+            m_Target.Height = bounds.Height;
+
             if (0 != (m_ResizeDir & Dock.Left))
             {
                 bounds.X -= delta.X;
