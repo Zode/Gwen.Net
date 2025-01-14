@@ -142,6 +142,7 @@ namespace Gwen.Net.Control
                 size.Height = y;
             }
 
+            size.Width += 1 + Margin.Right / 2; //hack: expand richlabel a bit so messageboxes are sized correctly 
             m_TextSize = size;
 
             m_NeedsRebuild = false;
