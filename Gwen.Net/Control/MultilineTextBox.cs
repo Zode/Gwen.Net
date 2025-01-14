@@ -239,9 +239,9 @@ namespace Gwen.Net.Control
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
-        protected override void OnMouseClickedLeft(int x, int y, bool down)
+        protected override void OnMouseClickedLeft(int x, int y, bool down, bool virtualClick = false)
         {
-            base.OnMouseClickedLeft(x, y, down);
+            base.OnMouseClickedLeft(x, y, down, virtualClick);
             if (m_SelectAll)
             {
                 OnSelectAll(this, EventArgs.Empty);
@@ -277,7 +277,7 @@ namespace Gwen.Net.Control
         /// </summary>
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
-        protected override void OnMouseDoubleClickedLeft(int x, int y)
+        protected override void OnMouseDoubleClickedLeft(int x, int y, bool virtualClick = false)
         {
             //base.OnMouseDoubleClickedLeft(x, y);
             OnSelectAll(this, EventArgs.Empty);

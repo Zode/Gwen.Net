@@ -1340,12 +1340,12 @@ namespace Gwen.Net.Control
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
-        protected virtual void OnMouseClickedLeft(int x, int y, bool down)
+        protected virtual void OnMouseClickedLeft(int x, int y, bool down, bool virtualClick = false)
         {
             Point reverse = CanvasPosToLocal(new(x, y));
 
-            if(reverse.X < 0 || reverse.X > ActualWidth ||
-                reverse.Y < 0 || reverse.Y > ActualHeight)
+            if((reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight) && !virtualClick)
             {
                 return;
             }
@@ -1368,12 +1368,12 @@ namespace Gwen.Net.Control
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
-        protected virtual void OnMouseClickedRight(int x, int y, bool down)
+        protected virtual void OnMouseClickedRight(int x, int y, bool down, bool virtualClick = false)
         {
             Point reverse = CanvasPosToLocal(new(x, y));
 
-            if(reverse.X < 0 || reverse.X > ActualWidth ||
-                reverse.Y < 0 || reverse.Y > ActualHeight)
+            if((reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight) && !virtualClick)
             {
                 return;
             }
@@ -1395,12 +1395,12 @@ namespace Gwen.Net.Control
         /// </summary>
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
-        protected virtual void OnMouseDoubleClickedLeft(int x, int y)
+        protected virtual void OnMouseDoubleClickedLeft(int x, int y, bool virtualClick = false)
         {
             Point reverse = CanvasPosToLocal(new(x, y));
 
-            if(reverse.X < 0 || reverse.X > ActualWidth ||
-                reverse.Y < 0 || reverse.Y > ActualHeight)
+            if((reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight) && !virtualClick)
             {
                 return;
             }
@@ -1427,16 +1427,16 @@ namespace Gwen.Net.Control
         /// </summary>
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
-        protected virtual void OnMouseDoubleClickedRight(int x, int y)
+        protected virtual void OnMouseDoubleClickedRight(int x, int y, bool virtualClick = false)
         {
             Point reverse = CanvasPosToLocal(new(x, y));
 
-            if(reverse.X < 0 || reverse.X > ActualWidth ||
-                reverse.Y < 0 || reverse.Y > ActualHeight)
+            if((reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight) && !virtualClick)
             {
                 return;
             }
-            
+
             // [halfofastaple] See: OnMouseDoubleClicked for discussion on triggering single clicks in a double click event
             OnMouseClickedRight(x, y, true);
 

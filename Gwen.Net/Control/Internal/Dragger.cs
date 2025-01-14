@@ -41,7 +41,7 @@ namespace Gwen.Net.Control.Internal
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
-        protected override void OnMouseClickedLeft(int x, int y, bool down)
+        protected override void OnMouseClickedLeft(int x, int y, bool down, bool virtualClick = false)
         {
             if (null == m_Target) return;
 

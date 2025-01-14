@@ -160,12 +160,12 @@ namespace Gwen.Net.Control
         /// <summary>
         /// Internal OnPressed implementation.
         /// </summary>
-        protected override void OnClicked(int x, int y)
+        protected override void OnClicked(int x, int y, bool virtualClick = false)
         {
             Point reverse = CanvasPosToLocal(new(x, y));
 
-            if(reverse.X < 0 || reverse.X > ActualWidth ||
-                reverse.Y < 0 || reverse.Y > ActualHeight)
+            if((reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight) && !virtualClick)
             {
                 return;
             }
@@ -178,11 +178,11 @@ namespace Gwen.Net.Control
             else if (!IsOnStrip)
             {
                 IsChecked = !IsChecked;
-                if (Selected != null)
-                    Selected.Invoke(this, new ItemSelectedEventArgs(this));
+                Selected?.Invoke(this, new ItemSelectedEventArgs(this));
                 GetCanvas().CloseMenus();
             }
-            base.OnClicked(x, y);
+            
+            base.OnClicked(x, y, virtualClick);
         }
 
         /// <summary>

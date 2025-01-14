@@ -112,7 +112,7 @@ namespace Gwen.Net.Control
         /// <summary>
         /// Internal OnPressed implementation.
         /// </summary>
-        protected override void OnClicked(int x, int y)
+        protected override void OnClicked(int x, int y, bool virtualClick = false)
         {
             if (IsDisabled)
                 return;
@@ -122,7 +122,7 @@ namespace Gwen.Net.Control
                 return;
             }
 
-            base.OnClicked(x, y);
+            base.OnClicked(x, y, virtualClick);
         }
     }
 }

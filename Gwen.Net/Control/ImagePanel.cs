@@ -150,7 +150,7 @@ namespace Gwen.Net.Control
         protected override bool OnKeySpace(bool down)
         {
             if (down)
-                base.OnMouseClickedLeft(0, 0, true);
+                base.OnMouseClickedLeft(0, 0, true, true);
             return true;
         }
     }

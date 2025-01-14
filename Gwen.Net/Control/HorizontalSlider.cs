@@ -37,9 +37,9 @@ namespace Gwen.Net.Control
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
-        protected override void OnMouseClickedLeft(int x, int y, bool down)
+        protected override void OnMouseClickedLeft(int x, int y, bool down, bool virtualClick = false)
         {
-            base.OnMouseClickedLeft(x, y, down);
+            base.OnMouseClickedLeft(x, y, down, virtualClick);
             m_SliderBar.MoveTo((int)(CanvasPosToLocal(new Point(x, y)).X - m_SliderBar.ActualWidth / 2), (this.ActualHeight - m_SliderBar.ActualHeight) / 2);
             m_SliderBar.InputMouseClickedLeft(x, y, down);
             OnMoved(m_SliderBar, EventArgs.Empty);

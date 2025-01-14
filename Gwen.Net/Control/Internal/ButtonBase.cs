@@ -112,7 +112,7 @@ namespace Gwen.Net.Control.Internal
         /// </summary>
         public virtual void Press(ControlBase control = null)
         {
-            OnClicked(0, 0);
+            OnClicked(0, 0, true);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Gwen.Net.Control.Internal
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
-        protected override void OnMouseClickedLeft(int x, int y, bool down)
+        protected override void OnMouseClickedLeft(int x, int y, bool down, bool virtualClick = false)
         {
             //base.OnMouseClickedLeft(x, y, down);
             if (down)
@@ -135,7 +135,7 @@ namespace Gwen.Net.Control.Internal
             {
                 if (IsHovered && m_Depressed)
                 {
-                    OnClicked(x, y);
+                    OnClicked(x, y, virtualClick);
                 }
 
                 IsDepressed = false;
@@ -150,12 +150,12 @@ namespace Gwen.Net.Control.Internal
         /// <summary>
         /// Internal OnPressed implementation.
         /// </summary>
-        protected virtual void OnClicked(int x, int y)
+        protected virtual void OnClicked(int x, int y, bool virtualClick = false)
         {
             Point reverse = CanvasPosToLocal(new(x, y));
 
-            if(reverse.X < 0 || reverse.X > ActualWidth ||
-                reverse.Y < 0 || reverse.Y > ActualHeight)
+            if((reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight) && !virtualClick)
             {
                 return;
             }
@@ -165,7 +165,7 @@ namespace Gwen.Net.Control.Internal
                 Toggle();
             }
 
-            base.OnMouseClickedLeft(x, y, true);
+            base.OnMouseClickedLeft(x, y, true, virtualClick);
         }
 
         /// <summary>
@@ -181,10 +181,10 @@ namespace Gwen.Net.Control.Internal
         /// </summary>
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
-        protected override void OnMouseDoubleClickedLeft(int x, int y)
+        protected override void OnMouseDoubleClickedLeft(int x, int y, bool virtualClick = false)
         {
-            base.OnMouseDoubleClickedLeft(x, y);
-            OnMouseClickedLeft(x, y, true);
+            base.OnMouseDoubleClickedLeft(x, y, virtualClick);
+            OnMouseClickedLeft(x, y, true, virtualClick);
         }
 
         protected override Size Measure(Size availableSize)
