@@ -152,6 +152,14 @@ namespace Gwen.Net.Control.Internal
         /// </summary>
         protected virtual void OnClicked(int x, int y)
         {
+            Point reverse = CanvasPosToLocal(new(x, y));
+
+            if(reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight)
+            {
+                return;
+            }
+            
             if (IsToggle)
             {
                 Toggle();

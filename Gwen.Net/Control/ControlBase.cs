@@ -1342,6 +1342,14 @@ namespace Gwen.Net.Control
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
         protected virtual void OnMouseClickedLeft(int x, int y, bool down)
         {
+            Point reverse = CanvasPosToLocal(new(x, y));
+
+            if(reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight)
+            {
+                return;
+            }
+
             if (down && Clicked != null)
                 Clicked(this, new ClickedEventArgs(x, y, down));
         }
@@ -1362,6 +1370,14 @@ namespace Gwen.Net.Control
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
         protected virtual void OnMouseClickedRight(int x, int y, bool down)
         {
+            Point reverse = CanvasPosToLocal(new(x, y));
+
+            if(reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight)
+            {
+                return;
+            }
+
             if (down && RightClicked != null)
                 RightClicked(this, new ClickedEventArgs(x, y, down));
         }
@@ -1381,6 +1397,14 @@ namespace Gwen.Net.Control
         /// <param name="y">Y coordinate.</param>
         protected virtual void OnMouseDoubleClickedLeft(int x, int y)
         {
+            Point reverse = CanvasPosToLocal(new(x, y));
+
+            if(reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight)
+            {
+                return;
+            }
+
             // [omeg] should this be called?
             // [halfofastaple] Maybe. Technically, a double click is still technically a single click. However, this shouldn't be called here, and
             //					Should be called by the event handler.
@@ -1405,6 +1429,14 @@ namespace Gwen.Net.Control
         /// <param name="y">Y coordinate.</param>
         protected virtual void OnMouseDoubleClickedRight(int x, int y)
         {
+            Point reverse = CanvasPosToLocal(new(x, y));
+
+            if(reverse.X < 0 || reverse.X > ActualWidth ||
+                reverse.Y < 0 || reverse.Y > ActualHeight)
+            {
+                return;
+            }
+            
             // [halfofastaple] See: OnMouseDoubleClicked for discussion on triggering single clicks in a double click event
             OnMouseClickedRight(x, y, true);
 
