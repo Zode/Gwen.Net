@@ -123,6 +123,11 @@ namespace Gwen.Net.Control.Internal
         /// <param name="down">If set to <c>true</c> mouse button is down.</param>
         protected override void OnMouseClickedLeft(int x, int y, bool down, bool virtualClick = false)
         {
+            if(IsDisabled)
+            {
+                return;
+            }
+            
             //base.OnMouseClickedLeft(x, y, down);
             if (down)
             {
@@ -183,6 +188,11 @@ namespace Gwen.Net.Control.Internal
         /// <param name="y">Y coordinate.</param>
         protected override void OnMouseDoubleClickedLeft(int x, int y, bool virtualClick = false)
         {
+            if(IsDisabled)
+            {
+                return;
+            }
+            
             base.OnMouseDoubleClickedLeft(x, y, virtualClick);
             OnMouseClickedLeft(x, y, true, virtualClick);
         }
