@@ -110,6 +110,11 @@ namespace Gwen.Net.Control
         public event GwenEventHandler<EventArgs> CheckChanged;
 
         /// <summary>
+        /// Invoked just before when the menu is opened
+        /// </summary>
+        public event GwenEventHandler<EventArgs> Opened;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MenuItem"/> class.
         /// </summary>
         /// <param name="parent">Parent control.</param>
@@ -202,6 +207,8 @@ namespace Gwen.Net.Control
         public void OpenMenu()
         {
             if (null == m_Menu) return;
+
+            Opened?.Invoke(this, EventArgs.Empty);
 
             m_Menu.Show();
             m_Menu.BringToFront();
