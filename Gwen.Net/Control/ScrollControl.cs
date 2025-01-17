@@ -1,5 +1,6 @@
 ﻿using System;
 using Gwen.Net.Control.Internal;
+using Gwen.Net.Input;
 
 namespace Gwen.Net.Control
 {
@@ -293,16 +294,25 @@ namespace Gwen.Net.Control
         /// <returns></returns>
         protected override bool OnMouseWheeled(int delta)
         {
+            if(InputHandler.IsKeyDown(GwenMappedKey.Shift))
+            {
+                delta *= 15;
+            }
+
             if (CanScrollV && m_VerticalScrollBar.IsVisible)
             {
                 if (m_VerticalScrollBar.SetScrollAmount(m_VerticalScrollBar.ScrollAmount - m_VerticalScrollBar.NudgeAmount * (delta / 60.0f), true))
+                {
                     return true;
+                }
             }
 
             if (CanScrollH && m_HorizontalScrollBar.IsVisible)
             {
                 if (m_HorizontalScrollBar.SetScrollAmount(m_HorizontalScrollBar.ScrollAmount - m_HorizontalScrollBar.NudgeAmount * (delta / 60.0f), true))
+                {
                     return true;
+                }
             }
 
             return false;
