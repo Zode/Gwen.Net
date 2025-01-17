@@ -58,8 +58,8 @@ namespace Gwen.Net.OpenTk.Renderers
             vertNum = 0;
             drawCallCount = 0;
             clipEnabled = false;
-            textureEnabled = false;
-            lastTextureID = -1;
+            TextureEnabled = false;
+            LastTextureID = -1;
 
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.ColorArray);
@@ -73,7 +73,7 @@ namespace Gwen.Net.OpenTk.Renderers
             if (restoreRenderState)
             {
                 GL.BindTexture(TextureTarget.Texture2D, 0);
-                lastTextureID = 0;
+                LastTextureID = 0;
 
                 // Restore the previous parameter values.
                 GL.BlendFunc((BlendingFactor)prevBlendSrc, (BlendingFactor)prevBlendDst);
@@ -82,7 +82,7 @@ namespace Gwen.Net.OpenTk.Renderers
                 if (!wasBlendEnabled)
                     GL.Disable(EnableCap.Blend);
 
-                if (wasTexture2DEnabled && !textureEnabled)
+                if (wasTexture2DEnabled && !TextureEnabled)
                     GL.Enable(EnableCap.Texture2D);
 
                 if (wasDepthTestEnabled)
@@ -96,7 +96,7 @@ namespace Gwen.Net.OpenTk.Renderers
 
         public override int VertexCount { get { return vertNum; } }
 
-        protected override unsafe void Flush()
+        public override unsafe void Flush()
         {
             if (vertNum == 0) return;
 
@@ -115,7 +115,7 @@ namespace Gwen.Net.OpenTk.Renderers
             vertNum = 0;
         }
 
-        protected override void DrawRect(Rectangle rect, float u1 = 0, float v1 = 0, float u2 = 1, float v2 = 1)
+        public override void DrawRect(Rectangle rect, float u1 = 0, float v1 = 0, float u2 = 1, float v2 = 1)
         {
             if (vertNum + 4 >= MaxVerts)
             {

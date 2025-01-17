@@ -12,13 +12,13 @@ namespace Gwen.Net.OpenTk.Renderers
 {
     public abstract class OpenTKRendererBase : RendererBase
     {
-        protected static int lastTextureID;
+        public static int LastTextureID;
 
         private readonly Dictionary<Tuple<string, Font>, TextRenderer> stringCache;
 
         protected int drawCallCount;
         protected bool clipEnabled;
-        protected bool textureEnabled;
+        public bool TextureEnabled;
         protected Color color;
 
         public int TextCacheSize => stringCache.Count;
@@ -48,7 +48,7 @@ namespace Gwen.Net.OpenTk.Renderers
             FlushTextCache();
         }
 
-        protected abstract void Flush();
+        public abstract void Flush();
 
         public void FlushTextCache()
         {
@@ -62,11 +62,11 @@ namespace Gwen.Net.OpenTk.Renderers
 
         public override void DrawFilledRect(Rectangle rect)
         {
-            if (textureEnabled)
+            if (TextureEnabled)
             {
                 Flush();
                 GL.Disable(EnableCap.Texture2D);
-                textureEnabled = false;
+                TextureEnabled = false;
             }
 
             rect = Translate(rect);
@@ -105,28 +105,28 @@ namespace Gwen.Net.OpenTk.Renderers
             int tex = (int)t.RendererData;
             rect = Translate(rect);
 
-            bool differentTexture = (tex != lastTextureID);
-            if (!textureEnabled || differentTexture)
+            bool differentTexture = (tex != LastTextureID);
+            if (!TextureEnabled || differentTexture)
             {
                 Flush();
             }
 
-            if (!textureEnabled)
+            if (!TextureEnabled)
             {
                 GL.Enable(EnableCap.Texture2D);
-                textureEnabled = true;
+                TextureEnabled = true;
             }
 
             if (differentTexture)
             {
                 GL.BindTexture(TextureTarget.Texture2D, tex);
-                lastTextureID = tex;
+                LastTextureID = tex;
             }
 
             DrawRect(rect, u1, v1, u2, v2);
         }
 
-        protected abstract void DrawRect(Rectangle rect, float u1 = 0, float v1 = 0, float u2 = 1, float v2 = 1);
+        public abstract void DrawRect(Rectangle rect, float u1 = 0, float v1 = 0, float u2 = 1, float v2 = 1);
 
         public override bool LoadFont(Font font)
         {
@@ -271,7 +271,7 @@ namespace Gwen.Net.OpenTk.Renderers
             GL.GenTextures(1, out int glTex);
 
             GL.BindTexture(TextureTarget.Texture2D, glTex);
-            lastTextureID = glTex;
+            LastTextureID = glTex;
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -373,7 +373,7 @@ namespace Gwen.Net.OpenTk.Renderers
             // even if the previous one was the same), we are probably making draw calls where we shouldn't be?
             // Eventually the bug needs to be fixed (color picker in a window causes graphical errors), but for now,
             // this is fine.
-            GL.BindTexture(TextureTarget.Texture2D, lastTextureID);
+            GL.BindTexture(TextureTarget.Texture2D, LastTextureID);
 
         }
 
@@ -400,7 +400,7 @@ namespace Gwen.Net.OpenTk.Renderers
             Color pixel;
 
             GL.BindTexture(TextureTarget.Texture2D, tex);
-            lastTextureID = tex;
+            LastTextureID = tex;
 
             long offset = 4 * (x + y * texture.Width);
             byte[] data = new byte[4 * texture.Width * texture.Height];
