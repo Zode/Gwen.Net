@@ -2427,10 +2427,19 @@ namespace Gwen.Net.Control
 
         private void SetInternalFlag(InternalFlags flag, bool value)
         {
-            if (value)
+            if(value)
+            {
                 m_InternalFlags |= flag;
+            }
             else
+            {
                 m_InternalFlags &= ~flag;
+            }
+
+            if(m_Skin is not null)
+            {
+                Redraw();
+            }
         }
 
         private bool CheckAndChangeInternalFlag(InternalFlags flag, bool value)
